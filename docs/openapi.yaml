@@ -1,0 +1,141 @@
+openapi: 3.0.3
+info:
+  title: WebSafari API
+  version: v1
+  description: API para la webapp tipo Uber (especificación inicial)
+servers:
+  - url: /api/v1
+
+paths:
+  /auth/login:
+    post:
+      summary: Autenticar usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Token y usuario
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  user:
+                    type: object
+
+  /auth/register:
+    post:
+      summary: Registrar usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email: { type: string }
+                password: { type: string }
+                role: { type: string, enum: [rider, driver] }
+      responses:
+        '201':
+          description: Usuario creado
+
+  /users/{id}:
+    get:
+      summary: Obtener perfil de usuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200': { description: OK }
+    put:
+      summary: Actualizar perfil de usuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200': { description: Updated }
+
+  /rides:
+    post:
+      summary: Crear solicitud de viaje
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rider_id: { type: integer }
+                origin: { type: object }
+                destination: { type: object }
+      responses:
+        '201': { description: Ride created }
+
+  /rides/{id}:
+    get:
+      summary: Obtener estado del viaje
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200': { description: OK }
+    patch:
+      summary: Actualizar estado (accept/cancel/complete)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200': { description: Updated }
+
+  /payments/charge:
+    post:
+      summary: Cargar pago por viaje
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200': { description: Charged }
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+- bearerAuth: []

@@ -1,0 +1,14 @@
+{
+  "name": "websafari-backend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "bcrypt": "^5.1.0",
+    "jsonwebtoken": "^9.0.0",
+    "cors": "^2.8.5"
+  }
+}
