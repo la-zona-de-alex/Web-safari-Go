@@ -1,0 +1,43 @@
+version: '3.8'
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: web_safari_mssql
+    environment:
+      SA_PASSWORD: "Your_password123"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql-data:/var/opt/mssql
+
+  backend:
+    build:
+      context: ./backend/api
+      dockerfile: Dockerfile
+    container_name: web_safari_backend
+    depends_on:
+      - mssql
+    environment:
+      - MSSQL_CONN=Server=mssql,1433;Initial Catalog=WebSafari;User Id=sa;Password=Your_password123;Encrypt=false;TrustServerCertificate=true;
+      - JWT_SECRET=dev-secret
+      - FRONTEND_ORIGIN=http://localhost:5173
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./backend/api:/usr/src/app
+    command: sh -c "npm install && npm run start"
+
+  frontend:
+    build:
+      context: ./scaffolding/frontend
+      dockerfile: Dockerfile
+    container_name: web_safari_frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./scaffolding/frontend:/usr/src/app
+    command: sh -c "npm install && npm run dev -- --host"
+
+volumes:
+  mssql-data:
